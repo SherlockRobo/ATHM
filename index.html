@@ -3,145 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>汽车之家 (ATHM) 投资价值看板</title>
+    <title>ATHM 动态投资看板</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --success: #16a34a;
-            --warning: #ca8a04;
-            --danger: #dc2626;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text: #1e293b;
+            --primary: #2563eb; --success: #16a34a; --warning: #ca8a04;
+            --danger: #dc2626; --bg: #f1f5f9; --card-bg: #ffffff; --text: #1e293b;
         }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; line-height: 1.5; }
-        .container { max-width: 1000px; margin: 0 auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; }
-        .ticker { font-size: 24px; font-weight: bold; color: var(--primary); }
-        .status { font-size: 14px; background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 99px; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
         
-        /* Dashboard Grid */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .card { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
-        .card-label { font-size: 14px; color: #64748b; margin-bottom: 8px; }
-        .card-value { font-size: 24px; font-weight: bold; }
-        .card-sub { font-size: 12px; margin-top: 4px; }
+        /* 仪表盘样式 */
+        .dashboard-main { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; }
+        .ticker-info h1 { margin: 0; color: var(--primary); font-size: 28px; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card { padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; background: #fff; transition: all 0.3s; }
+        .stat-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .label { font-size: 14px; color: #64748b; margin-bottom: 5px; }
+        .value { font-size: 24px; font-weight: 800; display: block; }
+        .sub-text { font-size: 12px; margin-top: 5px; }
 
-        /* Valuation Table */
-        .valuation-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
-        .valuation-title { font-weight: bold; margin-bottom: 12px; display: flex; align-items: center; }
-        .comparison-bar { height: 24px; background: #e2e8f0; border-radius: 12px; overflow: hidden; position: relative; margin: 10px 0; }
-        .bar-fill { height: 100%; background: var(--primary); transition: width 0.5s; }
+        /* 安全边际进度条 */
+        .margin-box { background: #eff6ff; padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #bfdbfe; }
+        .progress-container { height: 28px; background: #e2e8f0; border-radius: 14px; position: relative; margin: 15px 0; overflow: hidden; }
+        #price-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.5s ease-out; }
+
+        /* 数据编辑器 */
+        .editor-panel { background: #1e293b; color: white; padding: 20px; border-radius: 16px; height: fit-content; position: sticky; top: 20px; }
+        .editor-panel h3 { margin-top: 0; border-bottom: 1px solid #334155; padding-bottom: 10px; font-size: 18px; color: #f1f5f9; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px; }
+        .input-group input { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
         
-        /* Calculator */
-        .calc-section { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; font-size: 14px; color: #64748b; padding: 8px; border-bottom: 1px solid #e2e8f0; }
-        td { padding: 12px 8px; border-bottom: 1px solid #f1f5f9; font-weight: 500; }
-        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
+        td { padding: 10px 5px; border-bottom: 1px solid #f1f5f9; }
         .highlight { color: var(--success); font-weight: bold; }
-        .negative-ev { color: var(--danger); font-size: 12px; font-weight: normal; }
+
+        @media (max-width: 900px) { .container { grid-template-columns: 1fr; } .editor-panel { position: static; } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <div>
-            <span class="ticker">ATHM (汽车之家)</span>
-            <span style="color: #64748b; margin-left: 8px;">2025 FY 财报基准</span>
+    <div class="dashboard-main">
+        <div class="header">
+            <div class="ticker-info">
+                <h1>ATHM 汽车之家 <small style="font-size: 14px; color: #64748b; font-weight: normal;">(ADS 维度)</small></h1>
+            </div>
+            <div id="status-tag" class="status" style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 12px;">数据已同步</div>
         </div>
-        <div class="status">资产价值 > 市值 (烟蒂确认)</div>
-    </div>
 
-    <div class="grid">
-        <div class="card">
-            <div class="card-label">当前股价 (ADS)</div>
-            <div class="card-value">$18.83</div>
-            <div class="card-sub" style="color:var(--danger)">接近 IPO 价格 $17.00</div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">当前股价</div>
+                <span class="value" id="disp-price">$0.00</span>
+                <div class="sub-text" id="disp-vs-ipo">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">每股净现金 (ADS)</div>
+                <span class="value" id="disp-cash" style="color: var(--success);">$0.00</span>
+                <div class="sub-text" id="disp-cash-ratio">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">每股净资产 (BPS)</div>
+                <span class="value" id="disp-bps">$0.00</span>
+                <div class="sub-text" id="disp-pb">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">预估年化股息率</div>
+                <span class="value" id="disp-yield" style="color: var(--warning);">0.00%</span>
+                <div class="sub-text" id="disp-dividend">基于每股 $0.00 分红</div>
+            </div>
         </div>
-        <div class="card">
-            <div class="card-label">每股净现金 (ADS)</div>
-            <div class="card-value" style="color:var(--success)">$23.50</div>
-            <div class="card-sub">市值折价率: ~20%</div>
-        </div>
-        <div class="card">
-            <div class="card-label">每股净资产 (BPS)</div>
-            <div class="card-value">$28.00</div>
-            <div class="card-sub">P/B Ratio: 0.67x</div>
-        </div>
-        <div class="card">
-            <div class="card-label">年度总分红 (ADS)</div>
-            <div class="card-value">$1.79</div>
-            <div class="card-sub highlight">股息率: 9.51%</div>
-        </div>
-    </div>
 
-    <div class="valuation-box">
-        <div class="valuation-title">🛡️ 资产兜底分析 (ADS 维度)</div>
-        <div style="font-size: 14px; margin-bottom: 15px;">
-            如果你以 <strong>$19.00</strong> 买入，你买入的价格已经低于公司持有的纯现金。
+        <div class="margin-box">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; margin-bottom: 5px;">
+                <span>当前价</span>
+                <span>净现金墙</span>
+                <span>净资产墙</span>
+            </div>
+            <div class="progress-container">
+                <div id="price-bar"></div>
+            </div>
+            <p style="font-size: 12px; margin: 0; color: #475569;">
+                💡 <strong>提示：</strong> 当股价低于“净现金墙”时，意味着你买入的公司业务是白送的。
+            </p>
         </div>
-        <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: bold;">
-            <span>当前价格 $18.83</span>
-            <span>净现金 $23.50</span>
-            <span>净资产 $28.00</span>
-        </div>
-        <div class="comparison-bar">
-            <div class="bar-fill" style="width: 67%;"></div> </div>
-        <p style="font-size: 12px; color: #1e40af;">注：海尔入场成本约 <strong>$35.84</strong>，目前处于 5.2 折被套状态。</p>
-    </div>
 
-    <div class="calc-section">
-        <div class="valuation-title">📈 10,000 USD 投资预估 (分批买入逻辑)</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>项目</th>
-                    <th>数值 / 逻辑</th>
-                    <th>备注</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>预估买入均价</td>
-                    <td>$18.50</td>
-                    <td>分批建仓目标价</td>
-                </tr>
-                <tr>
+        <div class="valuation-table">
+            <h3 style="font-size: 18px; margin-bottom: 10px;">10,000 USD 投资模拟</h3>
+            <table>
+                <tr style="background: #f8fafc;">
                     <td>持有 ADS 股数</td>
-                    <td>540 股</td>
-                    <td>基于 1w 美金总投入</td>
+                    <td id="sim-shares" class="highlight">0</td>
+                    <td>(基于 $10,000 投入)</td>
                 </tr>
                 <tr>
-                    <td><strong>年度现金分红</strong></td>
-                    <td class="highlight">$966.60</td>
-                    <td>约 7,540 HKD (富途扣税 10% 后)</td>
+                    <td>年度到手现金流</td>
+                    <td id="sim-div-hkd" class="highlight">0.00 HKD</td>
+                    <td>(富途扣税 10% 后)</td>
                 </tr>
                 <tr>
-                    <td><strong>预估股息率</strong></td>
-                    <td class="highlight">9.68%</td>
-                    <td>显著优于 SCHD (~3.5%)</td>
+                    <td>止盈空间 (至净现金价)</td>
+                    <td id="sim-upside" style="color: var(--primary); font-weight: bold;">0.00%</td>
+                    <td>对应股价达目标位</td>
                 </tr>
-                <tr>
-                    <td>止盈目标 1 (现金价值)</td>
-                    <td>$23.50</td>
-                    <td>预期涨幅: +27%</td>
-                </tr>
-                <tr>
-                    <td>止盈目标 2 (净资产)</td>
-                    <td>$28.00</td>
-                    <td>预期涨幅: +51%</td>
-                </tr>
-            </tbody>
-        </table>
+            </table>
+        </div>
     </div>
 
-    <div style="margin-top: 20px; font-size: 12px; color: #94a3b8; text-align: center;">
-        数据来源：Autohome 2025 Unaudited Financial Results (March 2026) <br>
-        风险提示：业务持续萎缩风险、大股东关联交易风险。
+    <div class="editor-panel">
+        <h3>季度数据更新</h3>
+        <div class="input-group">
+            <label>当前美股股价 (USD)</label>
+            <input type="number" id="input-price" value="18.83" step="0.01">
+        </div>
+        <div class="input-group">
+            <label>总净现金 (亿元 RMB)</label>
+            <input type="number" id="input-total-cash" value="193.18">
+        </div>
+        <div class="input-group">
+            <label>股东总权益 (亿元 RMB)</label>
+            <input type="number" id="input-equity" value="230.00">
+        </div>
+        <div class="input-group">
+            <label>总股本 (亿 ADS)</label>
+            <input type="number" id="input-shares-total" value="1.17">
+        </div>
+        <div class="input-group">
+            <label>预期年度分红 (USD/ADS)</label>
+            <input type="number" id="input-ann-div" value="1.79" step="0.01">
+        </div>
+        <div class="input-group">
+            <label>RMB 兑 USD 汇率</label>
+            <input type="number" id="input-fx" value="7.15" step="0.01">
+        </div>
+        <hr style="border: 0; border-top: 1px solid #334155; margin: 20px 0;">
+        <p style="font-size: 11px; color: #94a3b8; line-height: 1.4;">
+            * 数据来源：每季报公告中的 "Cash, cash equivalents and short-term investments" 及 "Total equity attributable to Autohome Inc."
+        </p>
     </div>
 </div>
+
+<script>
+    const inputs = ['input-price', 'input-total-cash', 'input-equity', 'input-shares-total', 'input-ann-div', 'input-fx'];
+    
+    function updateDashboard() {
+        // 获取输入值
+        const price = parseFloat(document.getElementById('input-price').value) || 0;
+        const totalCashRmb = parseFloat(document.getElementById('input-total-cash').value) || 0;
+        const equityRmb = parseFloat(document.getElementById('input-equity').value) || 0;
+        const sharesTotal = parseFloat(document.getElementById('input-shares-total').value) || 1;
+        const annDiv = parseFloat(document.getElementById('input-ann-div').value) || 0;
+        const fx = parseFloat(document.getElementById('input-fx').value) || 7.2;
+
+        // 计算核心指标
+        const cashPerAds = (totalCashRmb / sharesTotal / fx).toFixed(2);
+        const bps = (equityRmb / sharesTotal / fx).toFixed(2);
+        const yieldRate = ((annDiv / price) * 100).toFixed(2);
+        const pb = (price / bps).toFixed(2);
+        const cashDiscount = (((cashPerAds - price) / cashPerAds) * 100).toFixed(1);
+
+        // 更新卡片
+        document.getElementById('disp-price').innerText = `$${price.toFixed(2)}`;
+        document.getElementById('disp-cash').innerText = `$${cashPerAds}`;
+        document.getElementById('disp-bps').innerText = `$${bps}`;
+        document.getElementById('disp-yield').innerText = `${yieldRate}%`;
+        document.getElementById('disp-dividend').innerText = `基于每股 $${annDiv} 分红`;
+        document.getElementById('disp-pb').innerText = `市净率 P/B: ${pb}x`;
+        document.getElementById('disp-cash-ratio').innerText = price < cashPerAds ? `价格低于现金: ${cashDiscount}%` : `价格高于现金价`;
+        document.getElementById('disp-vs-ipo').innerText = price < 17 ? `跌破 IPO 价!` : `较 IPO 价溢价: ${(((price-17)/17)*100).toFixed(1)}%`;
+
+        // 更新进度条 (以净资产为 100%)
+        const progress = Math.min((price / bps) * 100, 100);
+        document.getElementById('price-bar').style.width = `${progress}%`;
+        document.getElementById('price-bar').style.backgroundColor = price < cashPerAds ? '#16a34a' : '#2563eb';
+
+        // 投资模拟计算 (10,000 USD)
+        const myShares = Math.floor(10000 / price);
+        const netDivUsd = myShares * annDiv * 0.9; // 富途 10% 扣税
+        const netDivHkd = (netDivUsd * 7.8).toFixed(2); // 假设汇率 7.8
+        const upside = (((cashPerAds - price) / price) * 100).toFixed(2);
+
+        document.getElementById('sim-shares').innerText = `${myShares} 股`;
+        document.getElementById('sim-div-hkd').innerText = `${netDivHkd} HKD`;
+        document.getElementById('sim-upside').innerText = price < cashPerAds ? `+${upside}%` : `0.00%`;
+    }
+
+    // 绑定监听事件
+    inputs.forEach(id => {
+        document.getElementById(id).addEventListener('input', updateDashboard);
+    });
+
+    // 初始化运行
+    updateDashboard();
+</script>
 
 </body>
 </html>
